@@ -41,7 +41,7 @@ python -m http.server 8000
 - `index.html` — shell / navigation / support dialog
 - `styles.css` — responsive UI
 - `app.js` — lessons, learning flow, local state, Smart Random
-- `.github/workflows/pages.yml` — GitHub Pages deploy
+- `.nojekyll` — GitHub Pages用の静的配信設定
 
 ## QA checklist
 
@@ -57,6 +57,18 @@ python -m http.server 8000
 
 ## Deployment
 
-`main` へのpushで GitHub Actions から GitHub Pages 用artifactを作成・deployします。
+公開URL:
+
+https://silovar-uk.github.io/poco-a-poco/
+
+GitHub Pages は `gh-pages` ブランチから配信します。`main` を開発の正本とし、公開時に同じcommitを `gh-pages` へfast-forwardします。
+
+```bash
+git checkout main
+git pull
+git push origin main:gh-pages
+```
+
+このアプリはbuild不要なので、`main` と `gh-pages` の内容を一致させればそのまま公開できます。
 
 Repository: https://github.com/silovar-uk/poco-a-poco
