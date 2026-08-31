@@ -1,5 +1,5 @@
 const themeMeta=document.querySelector('meta[name="theme-color"]');
-const stepThemes=['#f3efe4','#f3efe4','#dbe8df','#172720','#172720','#f6eee7','#f7f1df','#e5eee7','#f0c84a'];
+const stepThemes=['#f3efe4','#eef2e9','#dbe8df','#172720','#172720','#f7eadf','#f7f1df','#f7edbd','#f0c84a'];
 
 function applyDesignState(detail={}){
   const route=detail.route||document.body.dataset.route||'home';
