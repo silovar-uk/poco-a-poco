@@ -1,74 +1,80 @@
 # Poco a Poco
 
-日本語話者向けのスペイン語Speaking MVP。
+日本語を足場に、5分ずつスペイン語を「思い出す → 声に出す → 自分の話へ変える」ための、build-freeな学習Webアプリです。
 
-**Goal:** 5分使うだけでも「昨日より一つ話せる」を作る。
+## Product structure
 
-## Learning loop
+- **HOME** — 今日の5分
+- **PATH** — Can-do順に進む
+- **PRACTICE** — Smart Randomで復習
+- **DISCOVERY** — 言葉・文化・音への寄り道
+- **LESSON** — SCENE → MEANING → CHUNK → RETRIEVE → SPEAK → CHANGE → PERSONALIZE → REUSE → DONE
 
-SCENE / FEEL → MEANING / NOTICE → CHUNK → RETRIEVE → SPEAK → CHANGE → PERSONALIZE → REUSE
+## Internal structure
 
-## Main areas
+現在の実装は責務を次の層へ分離しています。
 
-- **PATH** — Can-doベースで、次に学ぶ方向を作る
-- **PRACTICE** — 学習履歴を使い、思い出す必要がある表現を優先する
-- **DISCOVERY** — 文化・音・表現から予定外の発見を作る
-- **Japanese support** — Level 1〜4で日本語の足場を段階的に減らす
-
-## MVP rules
-
-MVPでは以下を使いません。
-
-- AI tutor / AI chat
-- speech recognition
-- pronunciation scoring
-- accounts / backend sync
-
-学習状態は `localStorage` の `poco-a-poco-v1` に保存します。
-
-## Run locally
-
-ビルド不要の静的Webアプリです。
-
-```bash
-python -m http.server 8000
+```text
+data/       learning content
+domain/     pure learning/progress logic
+state/      ephemeral lesson session state
+storage/    versioned local persistence + migration
+app.js      UI orchestration
+design.js   explicit Living Spanish design contract
 ```
 
-その後 `http://localhost:8000` を開いてください。
+詳細は [`ARCHITECTURE.md`](./ARCHITECTURE.md) を参照してください。
 
-## Files
+## Storage
 
-- `index.html` — shell / navigation / support dialog
-- `styles.css` — responsive UI
-- `app.js` — lessons, learning flow, local state, Smart Random
-- `.nojekyll` — GitHub Pages用の静的配信設定
+既存互換のため保存キーは `poco-a-poco-v1` を維持しています。
 
-## QA checklist
+現在のpayloadには `schemaVersion: 1` を持たせ、旧unversioned stateを自動migrationします。壊れたJSONは可能な場合timestamp付きbackupを残してからfallbackします。
 
-- HOME → 今日の5分 → 9 steps → 完了
-- 完了後に session / confidence / personal sentence が保存される
-- PATH の完了状態が反映される
-- PRACTICE に完了済みlessonが出る
-- Smart Random が「低自信・経過時間・練習回数」を使う
-- Japanese support Level 1〜4 が反映される
-- DISCOVERY が表示される
-- mobile width でnavigationとlessonが操作できる
-- reload後もlocal stateが残る
+現時点ではデータ量が小さいためIndexedDBへは移行せず、Storage Adapterだけを分離しています。
+
+## Tests
+
+依存追加なしで実行できます。
+
+```bash
+npm test
+```
+
+主な対象:
+
+- app/design syntax
+- lesson data validation
+- storage migration / corruption fallback
+- practice priority
+- streak / next lesson
+- lesson session contract
+- design layer dependency contract
+
+`main` へのpushでも `.github/workflows/test.yml` が実行されます。
+
+## Development principles
+
+- Simple now, replaceable later.
+- UIからlearning logicを分離する。
+- DomainからDOM / localStorageへ依存しない。
+- Living Spanishの表示契約をリファクタで壊さない。
+- React / backend / DB / AIなどは、現在の具体的な問題を解決しない限り追加しない。
 
 ## Deployment
+
+Canonical sourceは `main`、GitHub Pagesの公開branchは `gh-pages` です。
+
+基本フロー:
+
+```text
+main
+→ Internal foundation tests
+→ gh-pagesへfast-forward
+→ GitHub Pages build/deploy
+→ production smoke check
+```
 
 公開URL:
 
 https://silovar-uk.github.io/poco-a-poco/
-
-GitHub Pages は `gh-pages` ブランチから配信します。`main` を開発の正本とし、公開時に同じcommitを `gh-pages` へfast-forwardします。
-
-```bash
-git checkout main
-git pull
-git push origin main:gh-pages
-```
-
-このアプリはbuild不要なので、`main` と `gh-pages` の内容を一致させればそのまま公開できます。
-
-Repository: https://github.com/silovar-uk/poco-a-poco
