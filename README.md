@@ -78,3 +78,7 @@ main
 公開URL:
 
 https://silovar-uk.github.io/poco-a-poco/
+
+## Internal foundation baseline
+
+2026-08-31時点で、Native ES Modules / versioned storage / migration / data validation / zero-dependency tests / explicit design contract まで導入済みです。新しい教材や学習ロジックを追加する際は、`ARCHITECTURE.md` の依存ルールを先に確認してください。
