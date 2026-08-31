@@ -135,7 +135,8 @@ function jpHelp(ja,{minimal=false}={}){
   return `<p class="translation">${esc(ja)}</p>`;
 }
 function bilingualCue(es,ja){
-  if(state.support<=2)return esc(ja);
+  if(state.support===1)return esc(ja);
+  if(state.support===2)return `${esc(es)}<p class="translation cue-translation">${esc(ja)}</p>`;
   if(state.support===3)return `${esc(es)}<details class="jp-help inline-help"><summary>日本語ヒント</summary><p>${esc(ja)}</p></details>`;
   return esc(es);
 }
@@ -245,7 +246,7 @@ function lessonStep(l){
       return `<div class="eyebrow">${stepLabel('REUSE','再利用')}</div><h1>${ui('明日も、別の場所でも。','Úsala otra vez mañana.')}</h1><div class="notice"><b>${ui('次の再利用','Próxima reutilización')}</b><br>${esc(state.support>=3?l.reuseEs:l.reuse)}</div>${session.personal?`<div class="prompt-box"><small>MY SENTENCE</small><strong>${esc(session.personal)}</strong></div>`:''}<p class="microcopy">${ui('今の自信は？ Smart Random の優先度に使う。','¿Qué confianza tienes? La usaremos para priorizar la práctica.')}</p><div class="choice-row">${[[1,ui('まだ怪しい','Todavía difícil')],[2,ui('だいたい言える','Más o menos')],[3,ui('すぐ言える','Sale rápido')]].map(([v,t])=>`<button class="choice ${session.confidence===v?'is-selected':''}" data-confidence="${v}">${t}</button>`).join('')}</div>${nextButton(ui('今日の5分を完了','Terminar'))}`;
     case 8:
       const finalSentence=session.personal||l.retrieveAnswer;
-      return `<div class="done-burst">✓</div><div class="eyebrow">DONE · POCO A POCO</div><h1>${ui('今日、ひとつ増えた。','Hoy puedes decir una cosa más.')}</h1><small class="microcopy">${ui('今日の一文','TU FRASE DE HOY')}</small><strong class="big">${esc(finalSentence)}</strong>${state.support<=2?`<p class="lead">${esc(l.ja)}</p>`:''}<div class="next-suggestion"><p class="microcopy">${ui(`記録済み · 自信 ${session.confidence}/3`,`Guardado · confianza ${session.confidence}/3`)}</p><div class="lesson-actions"><button class="secondary-button" data-nav-home>${ui('ホームへ','Inicio')}</button><button class="ghost-button" data-nav-practice>${ui('復習を見る','Práctica')}</button></div></div>`;
+      return `<div class="done-burst">✓</div><div class="eyebrow">DONE · POCO A POCO</div><h1>${ui('今日、ひとつ増えた。','Hoy puedes decir una cosa más.')}</h1><small class="microcopy">${ui('今日の一文','TU FRASE DE HOY')}</small><strong class="big">${esc(finalSentence)}</strong><div class="next-suggestion"><p class="microcopy">${ui(`記録済み · 自信 ${session.confidence}/3`,`Guardado · confianza ${session.confidence}/3`)}</p><div class="lesson-actions"><button class="secondary-button" data-nav-home>${ui('ホームへ','Inicio')}</button><button class="ghost-button" data-nav-practice>${ui('復習を見る','Práctica')}</button></div></div>`;
   }
 }
 function nextButton(label){return `<div class="lesson-actions"><button class="secondary-button" data-next>${label} →</button></div>`}
