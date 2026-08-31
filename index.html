@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="ja">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#fff8ee" />
+  <meta name="description" content="Poco a Poco — 日本語を足場に、5分ずつスペイン語を話せるようになる学習アプリ。" />
+  <title>Poco a Poco</title>
+  <link rel="stylesheet" href="./styles.css" />
+</head>
+<body>
+  <div class="app-shell">
+    <header class="topbar">
+      <a class="brand" href="#home" data-nav="home" aria-label="Poco a Poco ホーム">
+        <span class="brand-mark" aria-hidden="true">P</span>
+        <span><strong>Poco a Poco</strong><small>hablar, poco a poco.</small></span>
+      </a>
+      <button class="support-button" id="supportButton" type="button" aria-haspopup="dialog">JP 2</button>
+    </header>
+
+    <main id="app" tabindex="-1"></main>
+
+    <nav class="bottom-nav" aria-label="メインナビゲーション">
+      <button type="button" data-nav="home"><span>⌂</span><small>HOME</small></button>
+      <button type="button" data-nav="path"><span>↗</span><small>PATH</small></button>
+      <button type="button" data-nav="practice"><span>◎</span><small>PRACTICE</small></button>
+      <button type="button" data-nav="discovery"><span>✦</span><small>DISCOVERY</small></button>
+    </nav>
+  </div>
+
+  <dialog id="supportDialog" class="support-dialog">
+    <form method="dialog">
+      <div class="dialog-head">
+        <div><small>JAPANESE SUPPORT</small><h2>日本語の足場</h2></div>
+        <button value="cancel" aria-label="閉じる" class="icon-button">×</button>
+      </div>
+      <p>慣れるほど、日本語を少しずつ減らす。いつでも戻せます。</p>
+      <div id="supportChoices" class="support-choices"></div>
+    </form>
+  </dialog>
+
+  <script src="./app.js" defer></script>
+</body>
+</html>
