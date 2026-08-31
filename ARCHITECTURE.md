@@ -6,18 +6,22 @@ Poco a Poco is intentionally a build-free static web app. The goal is not maximu
 
 Principle: **Simple now. Clear boundaries. Replaceable later.**
 
+Learning principle: **Learn less. Understand enough. Reuse more. Repair when stuck.**
+
 ## 2. Current structure
 
 ```text
 index.html
 app.js                    # UI orchestration + DOM events
-styles.css                # visual design system
+styles.css                # core visual design system
+learning-v2.css           # interaction / repair / transfer UI
 
 data/
-  content.js              # lessons + discovery content
+  content.js              # implemented lessons + discovery content
+  curriculum.js           # 24-30 Can-do capability roadmap
 
 domain/
-  learning.js             # pure learning/progress functions
+  learning.js             # pure learning/progress/practice functions
 
 state/
   session.js              # ephemeral lesson session state
@@ -59,9 +63,9 @@ Forbidden:
 - design -> hidden `state` / `session` globals
 - design -> DOM-shape guessing through MutationObserver
 
-## 4. Lesson Data Contract
+## 4. Learning Content Contract v2
 
-Required fields:
+Base fields remain:
 
 - `id`
 - `level`
@@ -79,15 +83,46 @@ Required fields:
 - `retrieveCueEs`
 - `retrieveAnswer`
 - `retrieveAnswerJa`
-- `change` (one or more non-empty strings)
+- `change`
 - `reuse`
 - `reuseEs`
 
-Current valid levels: `A0`, `A1`, `A1+`.
+A v2 Communication Episode also requires:
 
-`validateLessons()` must pass before the application starts. New content should fail early rather than produce a broken lesson at runtime.
+- `contentVersion: 2`
+- `capabilities[]`
+- `partnerPrompt`
+- `partnerResponse`
+- `repair`
+- `pronunciation`
+- `transfer`
 
-## 5. Persistent State Contract
+Capabilities are limited to:
+
+`SURVIVE`, `CONNECT`, `TRANSACT`, `REPAIR`, `EXPRESS`, `UNDERSTAND`.
+
+`validateLessons()` must pass before the app starts. `validateCurriculumMap()` also checks that the roadmap contains 24–30 Can-dos and valid capability/graph fields.
+
+The content schema should express a learning need before the UI adds a feature. Do not invent new UI controls first and then search for lesson content to justify them.
+
+## 5. Curriculum Contract
+
+`data/curriculum.js` is the roadmap, not a list of all currently implemented lessons.
+
+Each Can-do has:
+
+- scenario
+- observable Can-do
+- core chunk
+- partner line
+- repair strategy
+- pronunciation focus
+- prerequisites
+- later reuse links
+
+The curriculum is a graph, not only a sequence. Repair language is deliberately cross-cutting and should reappear in transactions, directions, hotels, and social interaction.
+
+## 6. Persistent State Contract
 
 Stored under the existing key `poco-a-poco-v1` for compatibility.
 
@@ -101,6 +136,10 @@ Stored under the existing key `poco-a-poco-v1` for compatibility.
 }
 ```
 
+Existing lesson IDs are preserved when a lesson is upgraded to v2 so historical completions remain meaningful.
+
+Completion history may contain additive fields such as `contentVersion`; old records remain valid.
+
 Persistent:
 
 - Japanese support level
@@ -111,23 +150,48 @@ Persistent:
 Not persistent:
 
 - current lesson step
+- recognition selections
 - answer reveal state
 - selected variation
 - speak-hidden state
+- transfer reveal state
 - form validation state
-- current session confidence until completion
+- current confidence until completion
 
-## 6. Session State Contract
+## 7. Session State Contract
 
-`state/session.js` owns the shape of an in-progress lesson session. Session state is disposable and must not be used as durable learning history.
+`state/session.js` owns the shape of an in-progress Communication Episode. Session state is disposable and must not be used as durable learning history.
 
 Nine steps are explicit:
 
-`scene -> meaning -> chunk -> retrieve -> speak -> change -> personalize -> reuse -> done`
+`scene -> partner -> chunk -> retrieve -> speak -> interact -> personalize -> transfer -> done`
 
-## 7. Storage Contract
+Meaning / Notice is folded into `chunk`. Repair is surfaced during `interact`. Reuse and confidence are folded into `transfer`. This keeps the lesson at nine steps instead of expanding to a 12–15 step flow.
 
-Only `storage/storage.js` may directly own the Web Storage persistence policy.
+## 8. Practice Contract v2
+
+Practice is not only “run the same lesson again.”
+
+Domain-generated quick drills currently support:
+
+- `REACT` — respond to a partner line
+- `REPAIR` — recover when communication breaks
+- `TRANSFER` — reuse a known chunk under a new condition
+
+A full Communication Episode is still available for deeper review.
+
+`masteryState()` deliberately distinguishes:
+
+- `NEW`
+- `GETTING THERE`
+- `USABLE`
+- `REVISIT`
+
+One completion never equals `USABLE`.
+
+## 9. Storage Contract
+
+Only `storage/storage.js` may directly own Web Storage persistence policy.
 
 Public responsibilities:
 
@@ -150,7 +214,7 @@ Rules:
 
 Not adopted now. Current data is small and localStorage remains adequate. The adapter boundary exists so a future IndexedDB implementation can replace persistence without rewriting domain logic.
 
-## 8. Design Layer Contract
+## 10. Design Layer Contract
 
 Living Spanish remains a product contract, not incidental decoration.
 
@@ -163,13 +227,11 @@ The UI explicitly publishes:
 - `.lesson[data-mode]`
 - `poco:render` custom event
 
-The UI also renders the Living Sentence spine directly because revealing or hiding a sentence is part of learning behavior, not merely visual decoration.
+The UI renders the Living Sentence spine directly because revealing or hiding a phrase is part of learning behavior, not merely visual decoration.
 
-`design.js` may react to these explicit signals (for example theme-color), but must not infer application state from arbitrary DOM structure.
+`design.js` may react to explicit signals such as theme color, but must not infer application state from arbitrary DOM structure.
 
-## 9. Testing strategy
-
-### Unit / contract
+## 11. Testing strategy
 
 Run:
 
@@ -179,25 +241,37 @@ npm test
 
 Covers:
 
-- lesson validation
+- app / design syntax
+- v2 lesson validation
+- curriculum-map validation
+- early Repair placement
+- legacy lesson-ID compatibility
 - legacy storage migration
 - corrupt storage backup behavior
 - unsupported schema behavior
 - storage round-trip
 - practice priority
+- REACT / REPAIR / TRANSFER task generation
+- mastery states
 - next lesson
 - streak
-- deterministic completion records
-- session contract
+- versioned completion records
+- nine-step session contract
 - design-layer dependency contract
 
-### Integration / smoke
+### Manual integration / smoke
 
 Before publishing, verify:
 
-`HOME -> lesson -> RETRIEVE -> SPEAK -> PERSONALIZE -> DONE -> HOME -> PRACTICE`
+`HOME -> PARTNER -> CHUNK -> RETRIEVE -> SPEAK -> INTERACT -> PERSONALIZE -> TRANSFER -> DONE -> PRACTICE`
 
-Also verify JP Levels 1–4.
+Also verify:
+
+- wrong recognition option can recover
+- Repair text does not appear before the interaction step
+- RETRIEVE / SPEAK / TRANSFER do not leak answers early
+- JP Levels 1–4
+- Quick Drill details reveal only after user opens them
 
 ### Manual accessibility / visual
 
@@ -210,7 +284,7 @@ Automation does not replace:
 - iPhone Safari visual check
 - reduced-motion behavior
 
-## 10. Deployment
+## 12. Deployment
 
 Canonical source: `main`.
 
@@ -228,7 +302,7 @@ main
 
 Do not treat a successful push alone as deployment completion.
 
-## 11. Where NOT to put code
+## 13. Where NOT to put code
 
 Do not put:
 
@@ -238,18 +312,19 @@ Do not put:
 - DOM queries in domain code
 - persistent data in session state
 - learning-answer visibility logic only in CSS/design decoration
+- new quiz/game UI without a named learning problem
 - framework/build dependencies without a concrete current problem
 
-## 12. Six-month maintainer test
+## 14. Six-month maintainer test
 
 A healthy architecture should allow:
 
 - 50 lessons without expanding `app.js` with lesson data
 - 100 discovery items without mixing editorial content into rendering logic
-- Smart Random replacement without rewriting UI markup
+- adding a new practice mode in domain first, UI second
+- changing Smart Random without rewriting lesson markup
 - localStorage replacement without rewriting learning logic
 - new lesson fields with validator/schema review
-- new practice modes with domain-first logic
 - visual redesign without access to hidden app globals
 - a new maintainer to understand the major boundaries in roughly 30 minutes
 
