@@ -3,6 +3,6 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "test": "node --check app.js && node --check design.js && node tests/run.js"
+    "test": "node --check app.js && node --check design.js && node tests/run.js && node tests/game-ui-run.js"
   }
 }
