@@ -6,10 +6,13 @@ export function createLessonSession(lesson,personal=''){
     personal,
     startedAt:new Date().toISOString(),
     revealed:false,
+    recognitionSelected:null,
+    interactionSelected:null,
     selected:null,
     speakHidden:false,
-    personalError:false
+    personalError:false,
+    transferRevealed:false
   };
 }
 
-export const LESSON_STEPS=['scene','meaning','chunk','retrieve','speak','change','personalize','reuse','done'];
+export const LESSON_STEPS=['scene','partner','chunk','retrieve','speak','interact','personalize','transfer','done'];
