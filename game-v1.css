@@ -1,0 +1,606 @@
+/* Poco a Poco — Game Language v1
+   Language becomes equipment. Conversation is the field where you use it. */
+
+:root{
+  --game-shadow:0 14px 0 rgba(23,39,32,.10),0 24px 38px rgba(23,39,32,.12);
+  --game-shadow-small:0 7px 0 rgba(23,39,32,.10),0 14px 24px rgba(23,39,32,.10);
+  --game-press:translateY(4px);
+  --game-border:2px solid var(--ink);
+  --game-radius:28px;
+}
+
+/* ---------- Shared game feel ---------- */
+.primary-button,.secondary-button,.ghost-button,.choice,.support-button,.bottom-nav button,.path-card,.practice-card,.practice-drill summary{
+  -webkit-tap-highlight-color:transparent;
+  touch-action:manipulation;
+}
+.primary-button,.secondary-button{
+  position:relative;
+  box-shadow:0 5px 0 rgba(23,39,32,.22);
+  transition:transform .12s var(--ease),box-shadow .12s var(--ease),background .18s var(--ease),color .18s var(--ease);
+}
+.primary-button:active,.secondary-button:active{
+  transform:var(--game-press)!important;
+  box-shadow:0 1px 0 rgba(23,39,32,.18);
+}
+.ghost-button,.support-button{
+  transition:transform .12s var(--ease),background .18s var(--ease),box-shadow .12s var(--ease);
+}
+.ghost-button:active,.support-button:active{transform:translateY(2px)}
+.choice{transition:transform .12s var(--ease),padding-left .18s var(--ease),background .18s var(--ease),box-shadow .18s var(--ease)}
+.choice:active{transform:translateY(2px)}
+.choice.is-selected,.recognition-choice.is-correct{animation:poco-snap .28s var(--ease) both}
+.feedback-card{animation:poco-pulse .34s var(--ease) both}
+
+/* Bottom navigation behaves like a compact game HUD without becoming a HUD parody. */
+.bottom-nav{
+  border:1px solid rgba(23,39,32,.18);
+  box-shadow:0 10px 32px rgba(23,39,32,.14),inset 0 1px rgba(255,255,255,.7);
+  backdrop-filter:blur(16px);
+}
+.bottom-nav button{position:relative;transition:transform .14s var(--ease),background .18s var(--ease)}
+.bottom-nav button:active{transform:translateY(2px) scale(.97)}
+.bottom-nav button.is-active:after{
+  content:"";
+  position:absolute;
+  left:50%;
+  bottom:5px;
+  width:18px;
+  height:3px;
+  border-radius:999px;
+  transform:translateX(-50%);
+  background:var(--rust);
+  animation:poco-pulse .3s var(--ease) both;
+}
+
+/* ---------- HOME: current mission ---------- */
+body[data-route="home"] .hero{position:relative}
+body[data-route="home"] .today-card{
+  position:relative;
+  overflow:hidden;
+  border:var(--game-border);
+  border-radius:34px 8px 34px 8px;
+  box-shadow:var(--game-shadow);
+  transform:rotate(-.35deg);
+}
+body[data-route="home"] .today-card:before{
+  content:"MISSION";
+  position:absolute;
+  right:-26px;
+  top:16px;
+  padding:7px 34px;
+  transform:rotate(8deg);
+  border-top:1px solid currentColor;
+  border-bottom:1px solid currentColor;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.2em;
+  opacity:.45;
+}
+body[data-route="home"] .today-card .primary-button{margin-top:8px}
+body[data-route="home"] .stat{
+  position:relative;
+  border-top:2px solid var(--ink);
+  padding-top:11px;
+}
+body[data-route="home"] .stat:before{
+  content:"";
+  position:absolute;
+  left:0;
+  top:-5px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:var(--saffron);
+  border:2px solid var(--ink);
+}
+
+/* ---------- PATH: Living Route ---------- */
+body[data-route="path"]{
+  background:
+    radial-gradient(circle at 84% 18%,rgba(240,200,74,.23),transparent 21rem),
+    radial-gradient(circle at 12% 70%,rgba(198,83,45,.10),transparent 24rem),
+    var(--paper);
+}
+.path-head{position:relative;margin-bottom:26px}
+.path-head:after{
+  content:"LANGUAGE BECOMES A ROUTE";
+  display:block;
+  margin-top:24px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.22em;
+  color:var(--muted);
+}
+.path-list{
+  position:relative;
+  display:block;
+  max-width:860px;
+  margin:16px auto 80px;
+  padding:28px 0 50px;
+}
+.path-list:before{
+  content:"";
+  position:absolute;
+  left:50%;
+  top:0;
+  bottom:0;
+  width:5px;
+  transform:translateX(-50%);
+  border-radius:999px;
+  background:
+    linear-gradient(var(--ink),var(--ink)) center/1px 100% no-repeat,
+    repeating-linear-gradient(to bottom,var(--saffron) 0 15px,transparent 15px 27px);
+  opacity:.72;
+}
+.path-card{
+  width:calc(50% - 44px);
+  min-height:190px;
+  margin:0 0 26px;
+  padding:20px 20px 18px;
+  display:grid;
+  grid-template-columns:68px minmax(0,1fr) 30px;
+  grid-template-rows:auto auto auto auto;
+  gap:8px 15px;
+  border:var(--game-border);
+  border-radius:26px 5px 26px 5px;
+  background:rgba(251,248,240,.94);
+  box-shadow:var(--game-shadow-small);
+  transform:rotate(-.7deg);
+  transition:transform .16s var(--ease),box-shadow .16s var(--ease),background .16s var(--ease);
+}
+.path-card:nth-child(even){margin-left:auto;transform:rotate(.8deg)}
+.path-card:before{
+  grid-column:1;
+  grid-row:1 / span 4;
+  align-self:start;
+  color:var(--ink);
+  opacity:.16;
+  font-size:62px;
+  line-height:.82;
+}
+.path-card:after{
+  content:"";
+  position:absolute;
+  top:34px;
+  width:36px;
+  height:3px;
+  background:var(--ink);
+}
+.path-card:nth-child(odd):after{right:-38px}
+.path-card:nth-child(even):after{left:-38px}
+.path-card:hover{transform:translateY(-4px) rotate(0);box-shadow:0 12px 0 rgba(23,39,32,.12),0 25px 42px rgba(23,39,32,.14)}
+.path-card:active{transform:translateY(5px) rotate(0);box-shadow:0 3px 0 rgba(23,39,32,.12),0 8px 18px rgba(23,39,32,.12)}
+.path-card .card-top{display:contents}
+.path-card .badge{grid-column:2;grid-row:1;justify-self:start;background:var(--paper-2)}
+.path-card .arrow{grid-column:3;grid-row:1 / span 3;align-self:center;justify-self:end;font-size:26px}
+.path-card h3{grid-column:2;grid-row:2;margin:0;font-size:26px;line-height:1.02}
+.path-card p{grid-column:2 / span 2;grid-row:3;margin:0;font-size:11px;line-height:1.6}
+.path-card .capability-row{grid-column:2 / span 2;grid-row:4;margin-top:3px}
+.path-card .progress{
+  position:absolute;
+  left:0;
+  right:0;
+  bottom:0;
+  height:7px;
+  margin:0;
+  background:rgba(23,39,32,.08);
+  border-radius:0 0 22px 3px;
+}
+.path-card .progress i{background:linear-gradient(90deg,var(--rust),var(--saffron));box-shadow:0 0 0 1px rgba(23,39,32,.12)}
+.path-card:nth-child(3n+2){background:rgba(219,232,223,.92)}
+.path-card:nth-child(4n){background:rgba(247,237,189,.90)}
+
+/* ---------- PRACTICE: language-tool workbench ---------- */
+body[data-route="practice"]{
+  background:
+    linear-gradient(90deg,rgba(23,39,32,.035) 1px,transparent 1px),
+    linear-gradient(rgba(23,39,32,.035) 1px,transparent 1px),
+    var(--paper);
+  background-size:32px 32px,32px 32px,auto;
+}
+.practice-head:after{
+  content:"YOUR KNOWN LANGUAGE IS YOUR TOOLKIT";
+  display:block;
+  margin-top:22px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.2em;
+  color:var(--rust);
+}
+.practice-hero{
+  position:relative;
+  border:2px solid #7f2f1f;
+  box-shadow:0 12px 0 #8e351f,0 26px 44px rgba(115,42,27,.20);
+  transform:rotate(-.45deg);
+}
+.practice-hero .primary-button{background:var(--paper-2);color:var(--rust);box-shadow:0 5px 0 rgba(87,28,18,.42)}
+.practice-drills{
+  perspective:1000px;
+  align-items:stretch;
+  margin-top:28px;
+}
+.practice-drill{
+  position:relative;
+  overflow:visible;
+  border:2px solid var(--ink);
+  border-radius:24px 5px 24px 5px;
+  background:var(--paper-2);
+  box-shadow:var(--game-shadow-small);
+  transform:rotate(-1.5deg);
+  transition:transform .18s var(--ease),box-shadow .18s var(--ease);
+}
+.practice-drill:nth-child(2){transform:translateY(14px) rotate(1.2deg)}
+.practice-drill:nth-child(3){transform:translateY(-3px) rotate(-.5deg)}
+.practice-drill:hover{transform:translateY(-6px) rotate(0);box-shadow:var(--game-shadow)}
+.practice-drill[open]{transform:translateY(-5px) rotate(0);z-index:2}
+.practice-drill summary{min-height:210px;padding:21px 20px 18px}
+.practice-drill summary:before{
+  content:"TOOL";
+  position:absolute;
+  right:14px;
+  top:12px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.18em;
+  opacity:.18;
+}
+.practice-drill summary strong{font-size:24px}
+.practice-drill:nth-child(1) .badge{color:var(--green)}
+.practice-drill:nth-child(2) .badge{color:var(--rust)}
+.practice-drill:nth-child(3) .badge{color:#786300}
+.practice-answer{border-top:2px solid var(--ink);animation:poco-reveal .28s var(--ease) both}
+.practice-list{margin-top:8px}
+.practice-card{transition:transform .14s var(--ease),background .14s var(--ease)}
+.practice-card:hover{transform:translateX(6px)}
+.practice-card:active{transform:translateX(2px)}
+
+/* ---------- Lesson progress rail ---------- */
+.lesson-top{position:relative}
+.lesson-step{
+  height:8px;
+  border:1px solid currentColor;
+  border-radius:999px;
+  background:rgba(23,39,32,.08);
+  overflow:visible;
+}
+.lesson-step i{
+  position:relative;
+  border-radius:999px;
+  background:linear-gradient(90deg,var(--rust),var(--saffron));
+  box-shadow:0 0 0 1px rgba(23,39,32,.12);
+}
+.lesson-step i:after{
+  content:"";
+  position:absolute;
+  right:-6px;
+  top:50%;
+  width:12px;
+  height:12px;
+  transform:translateY(-50%);
+  border:2px solid currentColor;
+  border-radius:50%;
+  background:var(--paper-2);
+  box-shadow:0 2px 0 rgba(23,39,32,.18);
+}
+.sentence-spine{border-bottom:2px solid rgba(23,39,32,.12)}
+.sentence-spine__stage{background:var(--ink);color:var(--paper-2);padding:4px 6px;border-radius:999px;justify-self:start}
+
+/* ---------- PARTNER: incoming move ---------- */
+.mode-partner{
+  background:
+    radial-gradient(circle at 14% 20%,rgba(30,92,73,.11),transparent 18rem),
+    #eef2e9;
+}
+.mode-partner .conversation-card{
+  max-width:620px;
+  margin-left:0;
+  border:2px solid var(--green);
+  border-left-width:8px;
+  box-shadow:8px 8px 0 rgba(30,92,73,.12);
+  animation:poco-enter-left .38s var(--ease) both;
+}
+.mode-partner .conversation-card:after{
+  content:"INCOMING";
+  position:absolute;
+  right:18px;
+  bottom:10px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.18em;
+  color:var(--green);
+  opacity:.36;
+}
+.mode-partner .recognition-options{margin-left:9%;max-width:660px}
+.mode-partner .feedback-card{margin-left:auto;max-width:560px;border:2px solid var(--green);box-shadow:-6px 6px 0 rgba(30,92,73,.10)}
+
+/* ---------- CHUNK: acquired language tool ---------- */
+.mode-chunk .prompt-box{
+  position:relative;
+  border:3px solid var(--green);
+  border-radius:30px 6px 30px 6px;
+  background:rgba(251,248,240,.52);
+  box-shadow:0 10px 0 rgba(30,92,73,.14);
+  transform:rotate(-.6deg);
+}
+.mode-chunk .prompt-box:before{
+  content:"LANGUAGE TOOL";
+  position:absolute;
+  right:14px;
+  top:12px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.16em;
+  color:var(--green);
+  opacity:.42;
+}
+
+/* ---------- RETRIEVE / SPEAK: deliberate absence ---------- */
+.mode-retrieve .reveal,.mode-speak .prompt-box{animation:poco-reveal .3s var(--ease) both}
+.mode-retrieve .secondary-button,.mode-speak .secondary-button{box-shadow:0 5px 0 rgba(255,255,255,.18)}
+.mode-speak .is-hidden-phrase{
+  border:2px dashed currentColor;
+  box-shadow:none;
+  animation:poco-breathe 1.8s ease-in-out infinite;
+}
+
+/* ---------- INTERACT: Conversation Rally ---------- */
+body[data-step="5"]{
+  background:
+    radial-gradient(circle at 18% 24%,rgba(240,200,74,.13),transparent 17rem),
+    radial-gradient(circle at 82% 70%,rgba(198,83,45,.16),transparent 19rem),
+    #201f1a;
+}
+body[data-step="5"] .topbar{color:var(--paper-2);background:linear-gradient(#201f1a 58%,rgba(32,31,26,0))}
+body[data-step="5"] .brand-copy small{color:#b8b1a3}
+body[data-step="5"] .brand-mark i:first-child{background:var(--paper-2)}
+body[data-step="5"] .support-button{border-color:currentColor}
+.mode-interact{
+  color:var(--paper-2);
+  background:
+    linear-gradient(90deg,transparent 49.8%,rgba(255,255,255,.12) 50%,transparent 50.2%),
+    rgba(23,39,32,.90);
+  border-radius:0 64px 0 0;
+}
+.mode-interact:before{
+  content:"RALLY";
+  position:absolute;
+  right:30px;
+  bottom:20px;
+  font-family:var(--serif);
+  font-size:clamp(76px,14vw,150px);
+  line-height:.8;
+  color:rgba(255,255,255,.035);
+  pointer-events:none;
+}
+.mode-interact .sentence-spine{color:#aeb8b1;border-color:rgba(255,255,255,.14)}
+.mode-interact .sentence-spine__stage{background:var(--saffron);color:var(--ink)}
+.mode-interact .sentence-spine__phrase{color:var(--paper-2)}
+.mode-interact .conversation-card{
+  max-width:610px;
+  margin-left:0;
+  color:var(--ink);
+  border:3px solid var(--rust);
+  border-left-width:10px;
+  background:var(--rust-soft);
+  box-shadow:10px 10px 0 rgba(198,83,45,.22);
+  animation:poco-enter-left .34s var(--ease) both;
+}
+.mode-interact .recognition-options{margin-left:auto;max-width:650px;border-color:rgba(255,255,255,.22)}
+.mode-interact .recognition-choice{color:var(--paper-2);border-color:rgba(255,255,255,.22)}
+.mode-interact .recognition-choice:hover{background:rgba(255,255,255,.08)}
+.mode-interact .recognition-choice.is-correct{color:var(--ink);background:var(--saffron)}
+.mode-interact .recognition-choice.is-wrong{color:white;background:rgba(198,83,45,.52)}
+.mode-interact .feedback-card{
+  margin-left:auto;
+  max-width:600px;
+  color:var(--ink);
+  border:3px solid var(--saffron);
+  background:var(--saffron-soft);
+  box-shadow:-10px 10px 0 rgba(240,200,74,.13);
+  animation:poco-enter-right .34s var(--ease) both;
+}
+.mode-interact .repair-card{
+  position:relative;
+  max-width:680px;
+  color:var(--paper-2);
+  border:2px dashed var(--rust);
+  background:rgba(198,83,45,.11);
+  box-shadow:none;
+  animation:poco-connect .36s var(--ease) both;
+}
+.mode-interact .repair-card:before{
+  content:"RECONNECT";
+  position:absolute;
+  right:18px;
+  top:12px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.18em;
+  color:var(--rust);
+}
+.mode-interact .repair-card strong{color:#ff9b76}
+.mode-interact .repair-card span{color:#c5c0b6}
+.mode-interact .secondary-button{background:var(--saffron);color:var(--ink);box-shadow:0 5px 0 rgba(240,200,74,.26)}
+
+/* ---------- PERSONALIZE: phrase forge ---------- */
+.mode-personalize .choice-row{position:relative}
+.mode-personalize .choice{
+  margin:4px 0;
+  border:1px solid var(--hair);
+  border-radius:18px 4px 18px 4px;
+  background:rgba(255,255,255,.22);
+  box-shadow:0 3px 0 rgba(23,39,32,.08);
+}
+.mode-personalize .choice.is-selected{border-color:var(--green);box-shadow:0 4px 0 rgba(30,92,73,.16)}
+.mode-personalize textarea{
+  border:2px solid var(--ink);
+  border-radius:24px 5px 24px 5px;
+  padding:22px;
+  background:rgba(251,248,240,.58);
+  box-shadow:inset 0 0 0 5px rgba(23,39,32,.025);
+}
+
+/* ---------- TRANSFER: same tool, new field ---------- */
+.mode-transfer{
+  background:
+    radial-gradient(circle at 75% 24%,rgba(240,200,74,.52),transparent 10rem),
+    radial-gradient(circle at 72% 26%,rgba(198,83,45,.16),transparent 18rem),
+    var(--saffron-soft);
+}
+.mode-transfer .transfer-card{
+  position:relative;
+  border:3px solid var(--ink);
+  border-radius:34px 6px 34px 6px;
+  background:rgba(251,248,240,.58);
+  box-shadow:12px 12px 0 rgba(23,39,32,.10);
+  animation:poco-transfer .38s var(--ease) both;
+}
+.mode-transfer .transfer-card:after{
+  content:"NEW FIELD";
+  position:absolute;
+  right:18px;
+  bottom:14px;
+  font-size:8px;
+  font-weight:900;
+  letter-spacing:.18em;
+  opacity:.28;
+}
+.mode-transfer .reveal{border:2px solid var(--rust);padding:22px;background:rgba(255,255,255,.28);box-shadow:7px 7px 0 rgba(198,83,45,.12)}
+
+/* ---------- DONE: capability unlock ---------- */
+.lesson-body.completion{
+  min-height:650px;
+  display:flex;
+  flex-direction:column;
+  justify-content:center;
+  color:var(--ink);
+  background:
+    radial-gradient(circle at 50% 36%,rgba(255,255,255,.92) 0 7rem,rgba(255,255,255,.34) 7.1rem 12rem,transparent 12.2rem),
+    repeating-radial-gradient(circle at 50% 36%,rgba(23,39,32,.055) 0 2px,transparent 2px 26px),
+    var(--saffron);
+  border:3px solid var(--ink);
+  border-radius:54px 8px 54px 8px;
+  box-shadow:0 16px 0 rgba(23,39,32,.12),0 32px 60px rgba(23,39,32,.16);
+  animation:poco-unlock .52s var(--ease) both;
+}
+.lesson-body.completion .sentence-spine{display:none}
+.lesson-body.completion .done-burst{
+  width:90px;
+  height:90px;
+  display:grid;
+  place-items:center;
+  margin:0 auto 18px;
+  border:4px solid var(--ink);
+  border-radius:50%;
+  background:var(--paper-2);
+  box-shadow:0 8px 0 rgba(23,39,32,.18);
+  font-size:44px;
+  animation:poco-pulse .44s .12s var(--ease) both;
+}
+.lesson-body.completion>.eyebrow{margin:0 auto 8px;color:var(--ink)}
+.lesson-body.completion h1{margin:8px auto 22px;max-width:720px;text-align:center}
+.lesson-body.completion .done-can-do{
+  align-self:center;
+  width:min(100%,680px);
+  padding:20px 22px;
+  border:2px solid var(--ink);
+  border-radius:22px 5px 22px 5px;
+  background:rgba(251,248,240,.74);
+  box-shadow:7px 7px 0 rgba(23,39,32,.12);
+}
+.lesson-body.completion .done-can-do small:before{content:"UNLOCKED · ";color:var(--rust)}
+.lesson-body.completion .big{
+  align-self:center;
+  max-width:760px;
+  margin:12px auto 16px;
+  text-align:center;
+  font-family:var(--serif);
+  font-size:clamp(34px,6vw,62px);
+  line-height:1;
+  letter-spacing:-.045em;
+}
+.lesson-body.completion .repair-card.compact{align-self:center;width:min(100%,620px);background:rgba(198,83,45,.11)}
+.lesson-body.completion .next-suggestion{align-self:center;width:min(100%,680px);text-align:center}
+.lesson-body.completion .lesson-actions{justify-content:center}
+
+/* ---------- Discovery deliberately stays editorial ---------- */
+body[data-route="discovery"] .discovery-card{transition:transform .18s var(--ease),color .18s var(--ease)}
+body[data-route="discovery"] .discovery-card:hover{transform:translateY(-3px)}
+
+/* ---------- Motion vocabulary ---------- */
+@keyframes poco-enter-left{
+  from{opacity:0;transform:translateX(-24px) rotate(-1deg)}
+  to{opacity:1;transform:translateX(0) rotate(0)}
+}
+@keyframes poco-enter-right{
+  from{opacity:0;transform:translateX(24px) rotate(1deg)}
+  to{opacity:1;transform:translateX(0) rotate(0)}
+}
+@keyframes poco-snap{
+  0%{transform:scale(.985)}
+  55%{transform:scale(1.025)}
+  100%{transform:scale(1)}
+}
+@keyframes poco-pulse{
+  0%{opacity:.3;transform:scale(.975)}
+  70%{opacity:1;transform:scale(1.015)}
+  100%{opacity:1;transform:scale(1)}
+}
+@keyframes poco-reveal{
+  from{opacity:0;transform:translateY(10px)}
+  to{opacity:1;transform:translateY(0)}
+}
+@keyframes poco-connect{
+  from{opacity:0;transform:translateY(14px);border-style:solid}
+  to{opacity:1;transform:translateY(0);border-style:dashed}
+}
+@keyframes poco-transfer{
+  from{opacity:0;transform:translateX(-18px) rotate(-1deg)}
+  to{opacity:1;transform:translateX(0) rotate(0)}
+}
+@keyframes poco-unlock{
+  0%{opacity:0;transform:scale(.965) rotate(-.4deg)}
+  65%{opacity:1;transform:scale(1.012) rotate(.1deg)}
+  100%{opacity:1;transform:scale(1) rotate(0)}
+}
+@keyframes poco-breathe{
+  0%,100%{opacity:.72}
+  50%{opacity:1}
+}
+
+@media(max-width:760px){
+  :root{--game-shadow:0 9px 0 rgba(23,39,32,.10),0 18px 28px rgba(23,39,32,.10)}
+  body[data-route="home"] .today-card{transform:none}
+  .path-list{padding-left:32px}
+  .path-list:before{left:12px;transform:none}
+  .path-card,.path-card:nth-child(even){width:100%;margin-left:0;transform:none}
+  .path-card:after,.path-card:nth-child(odd):after,.path-card:nth-child(even):after{left:-22px;right:auto;width:20px}
+  .path-card{grid-template-columns:54px minmax(0,1fr) 26px;padding:18px 16px;min-height:165px}
+  .path-card:before{font-size:49px}
+  .path-card h3{font-size:23px}
+  .practice-hero{transform:none}
+  .practice-drill,.practice-drill:nth-child(2),.practice-drill:nth-child(3){transform:none}
+  .mode-partner .recognition-options{margin-left:0}
+  .mode-partner .feedback-card,.mode-interact .feedback-card{margin-left:0}
+  .lesson-body.completion{border-radius:34px 5px 34px 5px;padding-left:24px;padding-right:24px}
+  .lesson-body.completion .done-burst{width:72px;height:72px;font-size:34px}
+}
+
+@media(max-width:520px){
+  .path-card{grid-template-columns:44px minmax(0,1fr) 24px;gap:7px 10px}
+  .path-card:before{font-size:40px}
+  .practice-drill summary{min-height:0}
+  .lesson-step{height:7px}
+  .mode-interact{background:rgba(23,39,32,.94)}
+}
+
+@media(prefers-reduced-motion:reduce){
+  .primary-button,.secondary-button,.ghost-button,.support-button,.bottom-nav button,.choice,.path-card,.practice-card,.practice-drill,.practice-answer,.feedback-card,.conversation-card,.repair-card,.transfer-card,.lesson-body.completion,.done-burst,.is-hidden-phrase{
+    animation:none!important;
+    transition:none!important;
+    transform:none!important;
+  }
+  .path-card:hover,.practice-card:hover,.practice-drill:hover,.practice-drill[open]{transform:none!important}
+  .mode-speak .is-hidden-phrase{opacity:1}
+}
